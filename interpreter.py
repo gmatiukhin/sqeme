@@ -2,11 +2,13 @@ import shlex
 import types
 from parsing import *
 from env import *
+from py_ffi_env import python_env
 
 
 class Interpeter:
     def __init__(self, src, env=None) -> None:
         e = env if env is not None else default_env()
+        e.layer(python_env())
         self.env = wrap_with_empty(e)
         self.set_new_code(src)
     

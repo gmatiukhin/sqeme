@@ -55,6 +55,11 @@ class EmptyEnv(Env):
 
 def default_env() -> Env:
     env = Env()
+    def manyplus(this, *others):
+        if len(others) == 1:
+            return this + others[0]
+        else:
+            return this + manyplus(others[0], *others[1:])
     env.update(
         {
             "begin": lambda *x: x[-1],
@@ -63,10 +68,14 @@ def default_env() -> Env:
             "cons": lambda x, y: [x] + y,
             "list": lambda *x: list(x),
             "+": op.add,
+            "++": manyplus,
             "-": op.sub,
             "*": op.mul,
             "/": op.truediv,
             "%": op.mod,
+
+            "print": lambda v: (print(v), v)[1]
+
         }
     )
     return env

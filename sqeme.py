@@ -22,7 +22,7 @@ def repl():
                 interpreter.set_new_code(text)
                 value = interpreter.run()
                 interpreter.env['_'] = value
-                print('--> ', value)
+                print('--> ', repr(value))
             except:
                 traceback.print_exc()
             buffer.clear()
@@ -40,7 +40,7 @@ if __name__ == "__main__":
                 print(interpreter.tokens)
                 print(interpreter.ast)
                 print(interpreter.env)
-                print(interpreter.run())
+                print('--> ',repr(interpreter.run()))
         case _:
             # Error out
             ...

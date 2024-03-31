@@ -19,7 +19,7 @@ def tokenize(src: str) -> typing.List[str]:
     #     src = src.replace(symbol, f" {symbol} ")
     # return src.split()
     import shlex
-    lexer = shlex.shlex(src)
+    lexer = shlex.shlex(src, punctuation_chars='+-*/')
     tokens = []
     next_token = lexer.get_token()
     while next_token != '':
