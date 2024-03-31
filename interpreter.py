@@ -4,10 +4,14 @@ from env import *
 
 class Interpeter:
     def __init__(self, src) -> None:
+        self.env = default_env()
+        self.set_new_code(src)
+    
+    def set_new_code(self, src) -> None:
         self.src = src
         self.tokens = tokenize(self.src)
+        print(self.tokens)
         self.ast = read_tokens(self.tokens[:])
-        self.env = default_env()
 
     def run(self) -> Expression:
         return eval(self.ast, self.env)
