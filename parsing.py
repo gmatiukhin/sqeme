@@ -15,9 +15,18 @@ DELIMITERS = ["(", ")"]
 
 
 def tokenize(src: str) -> typing.List[str]:
-    for symbol in DELIMITERS:
-        src = src.replace(symbol, f" {symbol} ")
-    return src.split()
+    # for symbol in DELIMITERS:
+    #     src = src.replace(symbol, f" {symbol} ")
+    # return src.split()
+    import shlex
+    lexer = shlex.shlex(src)
+    tokens = []
+    next_token = lexer.get_token()
+    while next_token != '':
+        tokens.append(next_token)
+        next_token = lexer.get_token()
+    
+    return tokens
 
 
 def read_tokens(tokens: typing.List[str]) -> Expression:

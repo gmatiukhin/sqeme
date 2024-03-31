@@ -1,4 +1,5 @@
 import sys
+import traceback
 from interpreter import *
 
 def repl():
@@ -13,12 +14,19 @@ def repl():
         if bracket_count < 0:
             print("Syntax Error: too many closing brackets")
             buffer.clear()
+            bracket_count = 0
         
         if bracket_count == 0:
             text = '\n'.join(buffer)
-            interpreter.set_new_code(text)
-            print(interpreter.run())
+            try:
+                interpreter.set_new_code(text)
+                value = interpreter.run()
+                interpreter.env['_'] = value
+                print('--> ', value)
+            except:
+                traceback.print_exc()
             buffer.clear()
+            bracket_count = 0
 
 if __name__ == "__main__":
     match len(sys.argv):

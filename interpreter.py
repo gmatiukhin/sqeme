@@ -3,8 +3,9 @@ from env import *
 
 
 class Interpeter:
-    def __init__(self, src) -> None:
-        self.env = default_env()
+    def __init__(self, src, env=None) -> None:
+        e = env if env is not None else default_env()
+        self.env = wrap_with_empty(e)
         self.set_new_code(src)
     
     def set_new_code(self, src) -> None:
@@ -19,14 +20,18 @@ class Interpeter:
 
 class Procedure:
     def __init__(self, params, body, env) -> None:
+        print(f"Prepared procedure with {params=} {body=} {env=}")
         self.params, self.body, self.env = params, body, env
 
     def __call__(self, *args) -> Expression:
-        print("Procedure:")
+        print("Calling procedure:")
         print("\tParams:", self.params)
         print("\tBody:", self.body)
-        print("\tEnv:", self.env)
-        return eval(self.body, Env(self.params, args, self.env))
+        env = wrap_with_empty(self.env)
+        for param, arg in zip(self.params, args):
+            env[param] = arg
+        print("\tResulting env for expression:", env)
+        return eval(self.body, env)
 
 
 def eval(exp: Expression, env: Env) -> Expression:  # type: ignore
