@@ -1,3 +1,5 @@
+import shlex
+import types
 from parsing import *
 from env import *
 
@@ -34,14 +36,33 @@ class Procedure:
         return eval(self.body, env)
 
 
+def get_primitive(exp: Expression) -> Expression | types.EllipsisType:
+    """
+    Get a primitive expression's evaluation, or Ellipsis if it is not a primitive expression.
+
+    Primitives are numbers, empty lists, and quoted strings.
+    """
+
+    if isinstance(exp, Number):
+        return exp
+
+    if isinstance(exp, List) and len(exp) == 0:
+        return exp
+
+    if isinstance(exp, Symbol):
+        if exp[0]==exp[-1]=='"' or exp[0] == exp[-1] == "'": # Ends with the same symbol as it begins, and that symbol is a quote.
+            sp = shlex.split(exp)  # Would parse this into tokens: it should be only a single token if it is a quoted string; escapes are handled.
+            if len(sp) == 1:
+                return sp[0]
+    return ...
+
 def eval(exp: Expression, env: Env) -> Expression:  # type: ignore
     print("Evaluating:", exp)
+    p = get_primitive(exp)
+    if p is not Ellipsis:
+        return p
     if isinstance(exp, Symbol):
         return env.find(exp)[exp]
-    elif isinstance(exp, Number):
-        return exp
-    elif isinstance(exp, List) and len(exp) == 0:
-        return exp
     op, *args = exp
     if op == "define":
         (symbol, exp) = args

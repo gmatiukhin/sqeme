@@ -1,5 +1,8 @@
 from typing import Any, Dict, Self
 import operator as op
+import typing
+
+from parsing import Atom, Expression, Number
 
 
 class Env(Dict):
@@ -8,7 +11,7 @@ class Env(Dict):
         self.outer = None
         self.layer(outer)
 
-    def find(self, var) -> Self:
+    def find(self, var: Atom) -> Self:
         print("Looking for", repr(var), 'in:', repr(self))
         return self if var in self else self.outer.find(var)  # type: ignore
 
@@ -31,23 +34,20 @@ class Env(Dict):
 class EmptyEnv(Env):
     """
     An Env that lies at the bottom of the type system.
-    It resolves prime-atoms 'FOO as strings "'FOO",
-    and for any other atom it raises an error.
+
+    It raises an error for any lookup.
     """
 
     def __init__(self, params=(), args=(), outer=None):
         self.outer = None
 
-    def find(self, var) -> Self:
+    def find(self, var: Atom) -> Self:
         return self  # This env always finds things
 
-    def __getitem__(self, key: str) -> Any:
-        if key.startswith("'"):
-            return str(key)
-        else:
+    def __getitem__(self, key: Atom) -> Expression:
             raise ValueError(f"No such name defined: {repr(key)}")
     
-    def layer(self, other: Self) -> None:
+    def layer(self, other: Env) -> None:
         raise TypeError("Cannot layer an env on top of the EmptyEnv.")
     
     def __repr__(self) -> str:
